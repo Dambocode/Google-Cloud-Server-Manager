@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Game Server Deployment Tool</title>
+    <script src="{{ url_for('static', filename='js/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/apiCalls.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sse.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/eventListeners.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" defer>
+</head>
+
+
+
+<body class="dark-mode"> <!-- Added dark-mode class by default -->
+    <div id="topBar">
+        <button id="createButton">Create Instance</button>
+        <div id="sortByDropdownContainer">
+            <h2>Sort By</h2>
+            <select id="sortDropdown">
+                <option value="name">Name</option>
+                <option value="creation">Creation Time</option>
+                <option value="last_start">Last Start</option>
+                <option value="last_stop">Last Stop</option>
+                <option value="status">Status</option>
+                <option value="zone">Zone</option>
+                <option value="machine_type">Machine Type</option>
+                <option value="disk_size">Disk Size</option>
+                <!-- Add other sorting options here -->
+            </select>
+        </div>
+        <button id="settingsButton">Settings</button>
+
+    </div>
+    <h1>Project ID: {{project_id}}</h1>
+    <div id="log-container">
+        <!-- Logs will be appended here -->
+    </div>
+    <div class="container">
+        <!-- Popup Modal for Create Form -->
+        <div id="createModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <!-- Your form goes here -->
+                <span class="close"></span>
+                <form class="deploymentForm" action="/api/createInstance" method="post" enctype="multipart/form-data">
+                    <div class="form-header">
+                        <h1>Create Instance</h1>
+                    </div>
+                    <div class="form-header">
+                        <h2>Instance Name</h2>
+                        <input type="text" id="instanceName" name="instanceName" required pattern="[A-Za-z0-9-]+"
+                            title="No special characters. Spaces will be replaced with -">
+                    </div>
+                    <div class="form-header">
+                        <h2>Game</h2>
+                        <select id="gameDropdown" name="game" required>
+                            <option value=""></option>
+                            <option value="Minecraft">Minecraft</option>
+                            <option value="Palworld">Palworld</option>
+                        </select>
+                    </div>
+                    <div class="form-header">
+                        <h2>Server Type</h2>
+                        <select id="serverTypeDropdown" name="serverType" required>
+                            <option value=""></option>
+                            
+                            <!-- Options will be dynamically added based on game selection -->
+                        </select>
+                    </div>
+
+                    <div class="minecraft-forge-options" style="display: none;">
+                        <h2>Forge Mod Pack (.zip)</h2>
+                        <select id="modListDropdown" name="mod">
+                            <!-- Mod items will be added here dynamically -->
+                        </select>
+                        <h2>Google Username</h2>
+                        <input type="text" name="username" id="username" required>
+                    </div>
+                    <div class="minecraft-vanilla-options" style="display: none;">
+                        <h2>Server File (.jar)</h2>
+                        <select id="modListDropdown" name="mod">
+                            <!-- Mod items will be added here dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="form-header">
+                        <h2>Region</h2>
+                        <select id="regionDropdown" name="region" required>
+                            <option value="northamerica-northeast1">Montréal</option>
+                            <option value="northamerica-northeast2">Toronto</option>
+                            <option value="southamerica-east1">São Paulo</option>
+                            <option value="southamerica-west1">Santiago</option>
+                            <option value="us-central1">Iowa</option>
+                            <option value="us-east1">South Carolina</option>
+                            <option value="us-east4">Northern Virginia</option>
+                            <option value="us-east5">Columbus</option>
+                            <option value="us-south1">Dallas</option>
+                            <option value="us-west1">Oregon</option>
+                            <option value="us-west2">Los Angeles</option>
+                            <option value="us-west3">Salt Lake City</option>
+                            <option value="us-west4">Las Vegas</option>
+                        </select>
+                    </div>
+                    <div class="form-header">
+                        <h2>Zone</h2>
+                        <select id="zoneDropdown" name="zone" required>
+                            <option value="a">a</option>
+                            <option value="b">b</option>
+                            <option value="c">c</option>
+                        </select>
+                    </div>
+                    <div class="form-header">
+                        <h2>Machine Type</h2>
+                        <select id="machineTypeDropdown" name="machineType" required>
+                            <option value="e2-micro">e2-micro (2vCPU, 1 core, 1 GB memory) - $6.89/m</option>
+                            <option value="e2-small">e2-small (2vCPU, 1 core, 2 GB memory) - $13.77/m</option>
+                            <option value="e2-medium">e2-medium (2vCPU, 1 core, 4 GB memory) - $27.55/m</option>
+                            <option value="e2-standard-2">e2-standard-2 (2vCPU, 1 core, 8 GB memory) - $55.09/m</option>
+                            <option value="e2-standard-4">e2-standard-4 (4vCPU, 2 core, 16 GB memory) - $110.19/m
+                            </option>
+                            <option value="e2-standard-8">e2-standard-8 (8vCPU, 4 core, 32 GB memory) - $220.37/m
+                            </option>
+                            <option value="e2-standard-16">e2-standard-16 (16vCPU, 8 core, 64 GB memory) - $440.75/m
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-header">
+                        <h2>Disk Size (GB)</h2>
+                        <input type="number" id="diskSize" name="diskSize" min="1" required>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="form-header">
+                        <button id="create-server-button" type="submit">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Popup Modal for Settings Button -->
+        <div id="settingsModal" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="deploymentForm">
+                    <span class="close"></span>
+                    <h1>Settings</h1>
+                    <h2>Upload Mods</h2>
+                    <div class="uploadModContainer">
+                        <select id="modType">
+                            <option value="forge">forge</option>
+                            <option value="spigot">spigot</option>
+                        </select>
+                        <label id ="modUploadButton" for="modUpload">Browse</label>
+                        <input id="modUpload" name="modUpload" style="visibility:hidden;" type="file">
+                    </div>
+                    <h2>Saved Mods</h2>
+                    <div id="modList" class="scrollable-list">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mod Name</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Mod items will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Popup Modal for Edit Button -->
+    <div id="editModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close"></span>
+            <!-- Your form goes here -->
+            <form class="deploymentForm" action="/api/edit" method="post">
+                <h1>Edit Instance</h1>
+                <h2>Instance Name</h2>
+                <!-- Dynamically load instance name based on edit pushed -->
+                <p id="editInstanceName" class="itemTitle"></p>
+                <h2>Game</h2>
+                <select id="gameDropdown" name="game" required>
+                    <option value=""></option>
+                    <option value="Minecraft">Minecraft</option>
+                    <option value="Palworld">Palworld</option>
+                </select>
+
+                <h2>Server Type</h2>
+                <select id="serverTypeDropdown" name="serverType" required>
+                    <!-- Options will be dynamically added based on game selection -->
+                </select>
+
+                <h2>Region</h2>
+                <select id="regionDropdown" name="region" required>
+                    <option value="northamerica-northeast1">Montréal</option>
+                    <option value="northamerica-northeast2">Toronto</option>
+                    <option value="southamerica-east1">São Paulo</option>
+                    <option value="southamerica-west1">Santiago</option>
+                    <option value="us-central1">Iowa</option>
+                    <option value="us-east1">South Carolina</option>
+                    <option value="us-east4">Northern Virginia</option>
+                    <option value="us-east5">Columbus</option>
+                    <option value="us-south1">Dallas</option>
+                    <option value="us-west1">Oregon</option>
+                    <option value="us-west2">Los Angeles</option>
+                    <option value="us-west3">Salt Lake City</option>
+                    <option value="us-west4">Las Vegas</option>
+                </select>
+
+                <h2>Zone</h2>
+                <select id="zoneDropdown" name="zone" required>
+                    <option value="a">a</option>
+                    <option value="b">b</option>
+                    <option value="c">c</option>
+                </select>
+
+                <h2>Machine Type</h2>
+                <select id="machineTypeDropdown" name="machineType" required>
+                    <option value="e2-micro">e2-micro (2vCPU, 1 core, 1 GB memory) - $6.89/m</option>
+                    <option value="e2-small">e2-small (2vCPU, 1 core, 2 GB memory) - $13.77/m</option>
+                    <option value="e2-medium">e2-medium (2vCPU, 1 core, 4 GB memory) - $27.55/m</option>
+                    <option value="e2-standard-2">e2-standard-2 (2vCPU, 1 core, 8 GB memory) - $55.09/m</option>
+                    <option value="e2-standard-4">e2-standard-4 (4vCPU, 2 core, 16 GB memory) - $110.19/m</option>
+                    <option value="e2-standard-8">e2-standard-8 (8vCPU, 4 core, 32 GB memory) - $220.37/m</option>
+                    <option value="e2-standard-16">e2-standard-16 (16vCPU, 8 core, 64 GB memory) - $440.75/m
+                    </option>
+                </select>
+
+
+                <h2>Disk Size (GB)</h2>
+                <input type="number" id="diskSize" name="diskSize" min="1" required>
+
+                <!-- Buttons -->
+                <div class="form-header">
+                    <button id="create-server-button" type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="instancesContainer">
+        <table id="instancesTable">
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>Name</th>
+                    <th>Zone</th>
+                    <th>Machine Type</th>
+                    <th>Disk Size</th>
+                    <th>Creation Time</th>
+                    <th>Last Start</th>
+                    <th>Last Stop</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data rows will be added here -->
+            </tbody>
+        </table>
+    </div>
+    </div>
+</body>
+
+</html>

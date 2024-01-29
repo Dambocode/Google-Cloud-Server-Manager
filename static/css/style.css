@@ -1,0 +1,290 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+*, *::before, *::after {
+    box-sizing: border-box; /* Include padding and border in the element's width and height */
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    /* Adjust styles for smaller screens */
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #282c35;
+    /* Slate background */
+    color: #cdd3de;
+    /* Light text for contrast */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+h2 {
+    color: #ccd4e0;
+    /* Light slate color */
+}
+
+input[type="number"],
+input[type="text"],
+select {
+    width: 50%;
+    padding: 10px;
+    margin: 10px;
+    background-color: #3c4049;
+    /* Dark input background */
+    color: #fff;
+    /* White text for contrast */
+    border: 1px solid #565961;
+    /* Slate border */
+    border-radius: 4px;
+}
+
+
+button,  #modUploadButton{
+    padding: 10px;
+    margin: 10px;
+    background-color: #4a4e57;
+    /* Dark button background */
+    color: #fff;
+    /* White text */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #636770;
+    /* Slightly lighter on hover */
+}
+
+.toggle-theme {
+    /* position: absolute; */
+    top: 10px;
+    right: 10px;
+}
+
+/* Light Mode Styles */
+.light-mode {
+    background-color: #fff;
+    /* White background */
+    color: #333;
+    /* Dark text */
+}
+
+.light-mode h2 {
+    color: #333;
+}
+
+.light-mode input[type="number"],
+.light-mode input[type="text"],
+.light-mode select {
+    background-color: #fff;
+    /* White input background */
+    color: #333;
+    /* Dark text */
+    border-color: #ddd;
+    /* Light border */
+}
+
+.light-mode button {
+    background-color: #ddd;
+    /* Light button background */
+    color: #333;
+    /* Dark text */
+}
+
+.light-mode button:hover {
+    background-color: #ccc;
+    /* Darker on hover */
+}
+
+#mainContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: start;
+    padding: 20px;
+}
+
+#loginSection,
+.toggle-theme,
+.container {
+    flex-basis: 45%;
+    /* Adjust the width as per your design */
+    padding: 10px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+    /* Optional: Adds shadow for depth */
+    border-radius: 10px;
+    /* Optional: Rounds the corners */
+}
+
+/* Additional styles for the table */
+#instancesTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#instancesTable th,
+#instancesTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+#instancesTable th {
+    background-color: #f4f4f4;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+    width: 100%;
+    /* Ensure the container takes up full width */
+}
+
+#deploymentForm {
+    flex-basis: 25%;
+    padding: 10px;
+    /* Rest of your styles */
+}
+
+
+.action-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: start;
+    width: 100%;
+    /* Ensure the container takes up full width */
+}
+
+.start-instance {
+    background-color: rgb(85, 255, 73);
+}
+
+.stop-instance {
+    background-color: rgb(255, 73, 73);
+}
+
+.delete-instance {
+    background-color: rgb(255, 73, 73);
+}
+
+
+.modal {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1;
+    /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+/* 
+#createModal, #editModal {
+    display: flex;
+    justify-content: center;
+} */
+
+.modal-content {
+    /* background-color: #282c35; */
+    margin: 5%;
+    /* padding: 10px; */
+    /* border: 1px solid #888; */
+    /* max-width: 30%; */
+    /* height: auto; */
+    /* Could be more or less, depending on screen size */
+    /* border-radius: 10px; */
+}
+
+.deploymentForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #282c35;
+    padding: 10px;
+    border: 1px solid #888;
+    padding: 10%;
+    height: auto;
+    /* Could be more or less, depending on screen size */
+    border-radius: 10px;
+
+}
+
+.uploadModContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#sortByDropdownContainer {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#topBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+#instancesTableContainer {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.scrollable-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+#log-container {
+    width: 99%; /* Match the width with the table */
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    margin: 20px auto; /* Auto margin for horizontal centering */
+    padding: 10px;
+}
+
+.dark-mode {
+    width: 90%; /* or any width less than 100% */
+    margin: 0 auto; /* top and bottom margins are 0, left and right margins are auto */
+}
